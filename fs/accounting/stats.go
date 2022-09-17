@@ -367,14 +367,6 @@ func (s *StatsInfo) String() string {
 		displaySpeedString     string
 	)
 
-	// Mod
-	fspeed := 0.0
-	if s.totalDuration() > 0 {
-		fspeed = float64(s.transfers) / ts.transferTime
-	}
-	fpsString := fmt.Sprintf("%.2f Files/s", fspeed)
-	fpsOneLineString := fmt.Sprintf(", %s, ETA %s", fpsString, etaString(s.transfers, ts.totalTransfers, fspeed))
-
 	if s.ci.DataRateUnit == "bits" {
 		displaySpeedString = fs.SizeSuffix(ts.speed * 8).BitRateUnit()
 	} else {
@@ -400,7 +392,7 @@ func (s *StatsInfo) String() string {
 		}
 	}
 
-	_, _ = fmt.Fprintf(buf, "%s%13s / %s, %s, %s, ETA %s%s%s",
+	_, _ = fmt.Fprintf(buf, "%s%13s / %s, %s, %s, ETA %s%s",
 		dateString,
 		fs.SizeSuffix(s.bytes).ByteUnit(),
 		fs.SizeSuffix(ts.totalBytes).ByteUnit(),
@@ -408,7 +400,6 @@ func (s *StatsInfo) String() string {
 		displaySpeedString,
 		etaString(s.bytes, ts.totalBytes, ts.speed),
 		xfrchkString,
-		fpsOneLineString,
 	)
 
 	if s.ci.ProgressTerminalTitle {
@@ -445,8 +436,8 @@ func (s *StatsInfo) String() string {
 			_, _ = fmt.Fprintf(buf, "Renamed:       %10d\n", s.renames)
 		}
 		if s.transfers != 0 || ts.totalTransfers != 0 {
-			_, _ = fmt.Fprintf(buf, "Transferred:   %10d / %d, %s%s\n",
-				s.transfers, ts.totalTransfers, percent(s.transfers, ts.totalTransfers), fpsOneLineString)
+			_, _ = fmt.Fprintf(buf, "Transferred:   %10d / %d, %s\n",
+				s.transfers, ts.totalTransfers, percent(s.transfers, ts.totalTransfers))
 		}
 		_, _ = fmt.Fprintf(buf, "Elapsed time:  %10ss\n", strings.TrimRight(elapsedTime.Truncate(time.Minute).String(), "0s")+fmt.Sprintf("%.1f", elapsedTimeSecondsOnly.Seconds()))
 	}
